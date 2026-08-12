@@ -39,7 +39,14 @@ async function deleteRepositoryCompletely(repositoryDoc) {
   await Conversation.deleteMany({ repoId: repositoryDoc._id });
 
   if (repositoryDoc.storagePath && fs.existsSync(repositoryDoc.storagePath)) {
-    fs.rmSync(repositoryDoc.storagePath, { recursive: true, force: true });
+    try {
+      fs.rmSync(repositoryDoc.storagePath, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+    } catch (err) {
+      // Non-fatal: prefer removing the DB records over blocking deletion on a
+      // locked file handle (can happen transiently on Windows).
+      // eslint-disable-next-line no-console
+      console.warn(`[repositoryService] Could not remove ${repositoryDoc.storagePath}: ${err.message}`);
+    }
   }
 
   await Repository.findByIdAndDelete(repositoryDoc._id);
