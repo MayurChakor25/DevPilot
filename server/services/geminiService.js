@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 const env = require('../config/env');
 const AppError = require('../utils/AppError');
 const { SYSTEM_PROMPT } = require('./promptTemplates');
@@ -12,7 +12,7 @@ function getClient() {
     );
   }
   if (!client) {
-    client = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+    client = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
   }
   return client;
 }
@@ -22,18 +22,15 @@ function getClient() {
  * response. Retries once on transient failures before surfacing an error.
  */
 async function generateContent(prompt, { temperature = 0.4, maxOutputTokens = 4096 } = {}) {
-  const genAI = getClient();
-  const model = genAI.getGenerativeModel({
-    model: env.GEMINI_MODEL,
-    systemInstruction: SYSTEM_PROMPT,
-  });
+  const ai = getClient();
 
   const attempt = async () => {
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { temperature, maxOutputTokens },
+    const response = await ai.models.generateContent({
+      model: env.GEMINI_MODEL,
+      contents: prompt,
+      config: { systemInstruction: SYSTEM_PROMPT, temperature, maxOutputTokens },
     });
-    return result.response.text();
+    return response.text;
   };
 
   try {

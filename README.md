@@ -70,7 +70,7 @@ retrieval-augmented generation with **Google Gemini**.
 unzipper, dotenv, cors, helmet, express-rate-limit, express-validator,
 express-mongo-sanitize.
 
-**AI:** Google Gemini (`@google/generative-ai`), model `gemini-2.5-flash` by default.
+**AI:** Google Gemini (`@google/genai`), model `gemini-3.6-flash` by default (configurable via `GEMINI_MODEL`).
 
 ## Architecture
 
@@ -162,7 +162,7 @@ express-mongo-sanitize.
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+ (required by the `@google/genai` SDK)
 - MongoDB (local instance or [MongoDB Atlas](https://www.mongodb.com/atlas) free tier)
 - A [Google AI Studio](https://aistudio.google.com/app/apikey) API key for Gemini (free tier)
 
@@ -193,7 +193,7 @@ Set these in `server/.env` (see `.env.example` for the canonical template):
 | `JWT_SECRET`          | Secret used to sign JWTs — use a long random string in production       | `openssl rand -hex 32`                                 |
 | `JWT_EXPIRES_IN`      | JWT expiry                                                               | `7d`                                                    |
 | `GEMINI_API_KEY`      | Google Gemini API key from AI Studio                                    | `AIza...`                                              |
-| `GEMINI_MODEL`        | Gemini model name                                                        | `gemini-2.5-flash`                                     |
+| `GEMINI_MODEL`        | Gemini model name                                                        | `gemini-3.6-flash`                                     |
 | `MAX_UPLOAD_SIZE_MB`  | Max ZIP upload size in megabytes                                        | `50`                                                    |
 
 For the client (optional, only needed for a non-proxied production build), copy
