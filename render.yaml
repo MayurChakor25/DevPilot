@@ -1,0 +1,34 @@
+# Render Blueprint for DevPilot AI backend.
+# See: https://render.com/docs/blueprint-spec
+#
+# Deploy: connect this repo in the Render dashboard and select "New Blueprint
+# Instance", or run `render blueprint launch` with the Render CLI.
+services:
+  - type: web
+    name: devpilot-ai-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: CLIENT_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: MAX_UPLOAD_SIZE_MB
+        value: 50
