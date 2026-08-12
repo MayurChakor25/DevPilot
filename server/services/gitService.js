@@ -45,8 +45,17 @@ async function cloneGithubRepository(url) {
   }
 
   // Remove the .git folder itself; we only need the working tree for analysis.
+  // This is best-effort: on Windows, files under .git can briefly remain locked
+  // by the OS/antivirus right after the git process exits, causing EBUSY/EPERM.
+  // That's not fatal - .git is already excluded from code processing via
+  // IGNORED_DIRECTORIES, so leaving it on disk never breaks the import.
   const gitMetaDir = path.join(targetPath, '.git');
-  fs.rmSync(gitMetaDir, { recursive: true, force: true });
+  try {
+    fs.rmSync(gitMetaDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn(`[gitService] Could not remove ${gitMetaDir}: ${err.message}`);
+  }
 
   return { repoName, storagePath: targetPath };
 }
