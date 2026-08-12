@@ -17,10 +17,10 @@ const env = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
 
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
-  // gemini-2.5-flash was retired for new API keys; gemini-3.6-flash is Google's
-  // current recommended Flash-tier replacement. Override via GEMINI_MODEL if
-  // Google introduces a newer model before this is updated.
-  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
+  // gemini-2.5-flash was retired for new API keys. gemini-3.1-flash-lite is
+  // confirmed working on the free API tier as of testing. Override via
+  // GEMINI_MODEL if Google changes model availability again.
+  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite',
 
   MAX_UPLOAD_SIZE_MB: parseInt(process.env.MAX_UPLOAD_SIZE_MB, 10) || 50,
 };
