@@ -1,0 +1,39 @@
+{
+  "name": "devpilot-ai-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DevPilot AI backend - Express API server",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "node scripts/smokeTest.js",
+    "lint": "echo \"(no linter configured)\" && exit 0"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.4.1",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.3",
+    "morgan": "^1.10.0",
+    "multer": "^2.2.0",
+    "simple-git": "^3.27.0",
+    "unzipper": "^0.12.3"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.1.2",
+    "nodemon": "^3.1.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

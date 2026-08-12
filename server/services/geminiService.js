@@ -1,0 +1,52 @@
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const env = require('../config/env');
+const AppError = require('../utils/AppError');
+const { SYSTEM_PROMPT } = require('./promptTemplates');
+
+let client = null;
+function getClient() {
+  if (!env.GEMINI_API_KEY) {
+    throw new AppError(
+      'GEMINI_API_KEY is not configured on the server. Add it to server/.env to enable AI features.',
+      503
+    );
+  }
+  if (!client) {
+    client = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+  }
+  return client;
+}
+
+/**
+ * Sends a fully-built prompt to Gemini and returns the plain-text (markdown)
+ * response. Retries once on transient failures before surfacing an error.
+ */
+async function generateContent(prompt, { temperature = 0.4, maxOutputTokens = 4096 } = {}) {
+  const genAI = getClient();
+  const model = genAI.getGenerativeModel({
+    model: env.GEMINI_MODEL,
+    systemInstruction: SYSTEM_PROMPT,
+  });
+
+  const attempt = async () => {
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { temperature, maxOutputTokens },
+    });
+    return result.response.text();
+  };
+
+  try {
+    return await attempt();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('[Gemini] first attempt failed, retrying once:', err.message);
+    try {
+      return await attempt();
+    } catch (err2) {
+      throw new AppError(`AI request failed: ${err2.message}`, 502);
+    }
+  }
+}
+
+module.exports = { generateContent };
