@@ -51,9 +51,31 @@ app.use(errorHandler);
 
 async function start() {
   await connectDB();
-  app.listen(env.PORT, () => {
+
+  const server = app.listen(env.PORT, () => {
     // eslint-disable-next-line no-console
     console.log(`[DevPilot AI] Server listening on port ${env.PORT} (${env.NODE_ENV})`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      // eslint-disable-next-line no-console
+      console.error(
+        `\n[DevPilot AI] Port ${env.PORT} is already in use.\n` +
+          `Another process (maybe a previous run of this server) is already listening on it.\n` +
+          `Either stop that process, or set a different PORT in server/.env.\n` +
+          `On Windows, find and stop it with:\n` +
+          `  netstat -ano | findstr :${env.PORT}\n` +
+          `  taskkill /PID <the_pid_from_above> /F\n` +
+          `On macOS/Linux:\n` +
+          `  lsof -i :${env.PORT}\n` +
+          `  kill -9 <the_pid_from_above>\n`
+      );
+      process.exit(1);
+    }
+    // eslint-disable-next-line no-console
+    console.error('[DevPilot AI] Server error:', err);
+    process.exit(1);
   });
 }
 
